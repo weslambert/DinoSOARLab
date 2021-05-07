@@ -1,0 +1,35 @@
+name: Custom.Flows.Write
+description: |
+  This server side event monitoring artifact waits for new artifacts
+  to be collected from endpoints and writes those to a central file.
+
+type: SERVER_EVENT
+
+parameters:
+  - name: ArtifactNameRegex
+    default: .
+    description: Only upload these artifacts to elastic
+
+sources:
+  - queries:
+      - LET completions = SELECT * FROM watch_monitoring(
+             artifact="System.Flow.Completion")
+             WHERE Flow.artifacts_with_results =~ ArtifactNameRegex
+
+      - LET documents = SELECT * FROM foreach(row=completions,
+          query={
+             SELECT * FROM foreach(
+                 row=Flow.artifacts_with_results,
+                 query={
+                     SELECT *, _value AS Artifact,
+                            timestamp(epoch=now()) AS timestamp,
+                            ClientId, Flow.session_id AS FlowId,
+                            { SELECT last_ip FROM clients(client_id=ClientId) } AS LastIp
+                     FROM source(
+                        client_id=ClientId,
+                        flow_id=Flow.session_id,
+                        artifact=_value)
+                 })
+          })
+
+      - SELECT * FROM documents

@@ -1,0 +1,8 @@
+firewall:
+  aliases:
+    ports:
+     velociraptor:
+        tcp:
+          - 8000
+          - 8001
+          - 8889

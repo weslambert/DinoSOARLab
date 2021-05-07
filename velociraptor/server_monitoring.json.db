@@ -1,0 +1,14 @@
+{
+ "artifacts": [
+  "Server.Monitor.Health",
+  "Custom.Flows.Write"
+ ],
+ "specs": [
+  {
+   "artifact": "Server.Monitor.Health",
+   "parameters": {
+
+   }
+  }
+ ]
+}

@@ -1,0 +1,17 @@
+{%- if grains['role'] == 'so-eval' -%}
+{%- set ES = salt['pillar.get']('manager:mainip', '') -%}
+{%- else %}
+{%- set ES = salt['pillar.get']('elasticsearch:mainip', '') -%}
+{%- endif %}
+{% set FEATURES = salt['pillar.get']('elastic:features', False) %}
+output {
+  if "velociraptor" in [module] or "velociraptor" in [event.module] {
+    elasticsearch {
+      pipeline => "velociraptor"
+      hosts => "{{ ES }}"
+      index => "so-velociraptor"
+      ssl => true
+      ssl_certificate_verification => false
+    }
+  }
+}

@@ -1,0 +1,44 @@
+{
+        "description": "velociraptor",
+        "processors": [{
+                        "set": {
+                                "field": "tags",
+                                "value": "velociraptor"
+                        }
+                },
+                { "rename":     { "field": "timestamp",         "target_field": "@timestamp",   "ignore_missing": true  } },
+                { "rename":     { "field": "Architecture",         "target_field": "host.architecture",   "ignore_missing": true  } },
+                { "rename":     { "field": "ClientId",         "target_field": "client.id",   "ignore_missing": true  } },
+                { "rename":     { "field": "Fqdn",         "target_field": "host.fqdn",   "ignore_missing": true  } },
+                { "rename":     { "field": "Hostname",         "target_field": "host.hostname",   "ignore_missing": true  } },
+                { "rename":     { "field": "Labels",         "target_field": "client.labels",   "ignore_missing": true  } },
+                { "rename":     { "field": "OS",         "target_field": "host.os",   "ignore_missing": true  } },
+                { "rename":     { "field": "FlowId",         "target_field": "flow.id",   "ignore_missing": true  } },
+                { "rename":     { "field": "Platform",         "target_field": "os.name",   "ignore_missing": true  } },
+                { "rename":     { "field": "PlatformVersion",         "target_field": "os.version",   "ignore_missing": true  } },
+                { "rename":     { "field": "KernelVersion",         "target_field": "os.kernel",   "ignore_missing": true  } },
+                { "rename":     { "field": "Artifact",              "target_field": "artifact.name", "ignore_failure": true  } },
+                { "rename":     { "field": "User",              "target_field": "user.name", "ignore_failure": true  } },
+                { "rename":     { "field": "Uid",              "target_field": "user.id", "ignore_failure": true  } },
+                { "rename":     { "field": "Gid",              "target_field": "user.group.id", "ignore_failure": true  } },
+                { "rename":     { "field": "Description",              "target_field": "user.description", "ignore_failure": true  } },
+                { "rename":     { "field": "Shell",              "target_field": "user.shell", "ignore_failure": true  } },
+                { "rename":     { "field": "Homedir",              "target_field": "user.home", "ignore_failure": true  } },
+                { "split":      { "field": "LastIp",       "separator": ":",                   "ignore_failure": true  } },
+                { "set":        { "field": "client.ip",        "value": "{{ LastIp.0 }}"  } },
+                { "set":        { "field": "event.module",        "value": "velociraptor"  } },
+                { "set":        { "field": "event.dataset",        "value": "artifact"  } },
+                { "remove":     { "if": "ctx.client.labels == null", "field": "client.labels", "ignore_failure": true                                                           } },
+                { "remove":     { "field": ["LastIp"],                    "ignore_failure": true                                          } },
+                { "remove":     { "field": ["Artifact","BuildTime","LastIp","Name"],                    "ignore_failure": true                                          } },
+                {
+                        "date_index_name": {
+                                "field": "@timestamp",
+                                "index_name_prefix": "velociraptor-",
+                                "date_rounding": "d",
+                                "ignore_failure": true,
+                                "index_name_format": "yyyy.MM.dd"
+                        }
+                }
+        ]
+}

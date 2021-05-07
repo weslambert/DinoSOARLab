@@ -1,0 +1,11 @@
+{
+  "index_patterns": ["so-velociraptor-*"],
+  "version": 50001,
+  "order": 20,
+  "settings":{
+    "number_of_replicas": 0,
+    "number_of_shards": 1,
+    "index.refresh_interval":"30s",
+    "index.default_pipeline": "velociraptor"
+  }
+}

@@ -1,0 +1,115 @@
+#!/bin/bash
+# Check for prerequisites
+if [ "$(id -u)" -ne 0 ]; then
+    echo "This script must be run using sudo!"
+    exit 1
+fi
+
+FB_INPUT="yes"
+
+# Copy Velociraptor config
+mkdir -p /opt/so/saltstack/local/salt/velociraptor
+cp -av salt/velociraptor/* /opt/so/saltstack/local/salt/velociraptor
+
+# Copy firewall config
+cp -av salt/firewall/* /opt/so/saltstack/local/salt/firewall
+
+# Copy Filebeat config
+cp -av salt/filebeat/* /opt/so/saltstack/local/salt/filebeat
+
+# Copy nginx config
+cp salt/nginx/etc/nginx.conf /opt/so/saltstack/local/salt/nginx/etc/nginx.conf
+
+# Copy SOC config
+cp salt/soc/files/soc/hunt.actions.json /opt/so/saltstack/local/salt/soc/files/soc/hunt.actions.json
+
+# Copy utility scripts
+cp -av salt/common/tools/sbin/so-velociraptor-* /opt/so/saltstack/default/salt/common/tools/sbin/
+
+# Copy ES Ingest config, Logstash config (if applicable), and template
+if [[ "$FB_INPUT" == "yes" ]]; then
+    cp salt/elasticsearch/files/ingest/velociraptor.fb_input /opt/so/saltstack/local/salt/elasticsearch/files/ingest/velociraptor
+    cp salt/logstash/pipelines/config/custom/9501_output_velociraptor.conf.jinja /opt/so/saltstack/local/salt/logstash/pipelines/config/custom/9501_output_velociraptor.conf.jinja
+else
+    cp salt/elasticsearch/files/ingest/velociraptor.es_input /opt/so/saltstack/local/salt/elasticsearch/files/ingest/velociraptor
+fi
+cp salt/elasticsearch/templates/custom/so-velociraptor-template.json /opt/so/saltstack/local/salt/elasticsearch/templates/custom/so-velociraptor-template.json
+
+# Modify templates so Velociraptor will inherit mappings
+cp /opt/so/saltstack/default/salt/elasticsearch/templates/so/so-common-template.json /opt/so/saltstack/local/salt/elasticsearch/templates/so/so-common-template.json
+sed -i 's|\"so-playbook-\*\"|\"so-playbook-*\",\ \"so-velociraptor-\*\"|' /opt/so/saltstack/local/salt/elasticsearch/templates/so/so-common-template.json
+
+# Copy pillar stuff for ES and Logstash config
+for i in elasticsearch logstash; do
+    cp -av pillar/$i/* /opt/so/saltstack/local/pillar/$i
+done
+
+# Edit minion pillar to include Velociraptor firewwall config
+cat << EOF >> /opt/so/saltstack/local/pillar/minions/*.sls
+firewall:
+  assigned_hostgroups:
+    chain:
+      DOCKER-USER:
+        hostgroups:
+          velociraptor:
+            portgroups:
+              - portgroups.velociraptor
+EOF
+
+# Add firewall hostgroup for Velociraptor
+/usr/sbin/so-firewall addhostgroup velociraptor
+
+# Restart ES to load new config
+so-elasticsearch-restart --force
+
+# Restart Logstash to load output
+so-logstash-restart --force
+
+# Restart SOC
+so-soc-restart --force
+
+# Restart nginx to load new config
+so-nginx-restart --force
+
+# Apply common state to pull in utility scripts
+salt "*" saltutil.kill_all_jobs && salt-call state.apply common
+
+# Start Velociraptor
+so-velociraptor-start --force
+
+echo "Waiting..."
+sleep 45s 
+
+# Adjust Velociraptor config
+CUSTOM_ARTIFACT_DIR="/opt/so/conf/velociraptor/artifact_definitions/Custom/Flows"
+mkdir -p $CUSTOM_ARTIFACT_DIR
+cp velociraptor/artifacts/Custom.Flows.Write $CUSTOM_ARTIFACT_DIR/Write.yaml
+chmod 700 $CUSTOM_ARTIFACT_DIR/Write.yaml
+cp velociraptor/server_monitoring.json.db /opt/so/conf/velociraptor/config/
+chmod 640 /opt/so/conf/velociraptor/config/server_monitoring.json.db
+
+# Re-generate frontend cert
+mv /opt/so/conf/velociraptor/server.config.yaml /tmp/server.config.yaml
+/opt/so/conf/velociraptor/velociraptor --config /tmp/server.config.yaml config rotate_key > /opt/so/conf/velociraptor/server.config.yaml
+
+# Restart Filebeat
+so-filebeat-restart --force
+
+# Restart Velociraptor
+so-velociraptor-restart --force
+
+# Configure user/pass/role
+echo "Waiting for Velociraptor to initialize..."
+sleep 15s
+echo "Please provide an administrative username, then press[ENTER]:"
+read username
+echo "Please provide a password, then press [ENTER]:"
+read -s password
+
+# Configure
+docker exec so-velociraptor /velociraptor/velociraptor --config server.config.yaml user add $username $password --role administrator
+
+# Copy top file
+cp salt/top.sls /opt/so/saltstack/local/salt/top.sls
+
+echo "Done!"

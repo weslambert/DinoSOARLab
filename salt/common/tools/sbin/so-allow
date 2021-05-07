@@ -1,0 +1,173 @@
+#!/bin/bash
+
+# Copyright 2014,2015,2016,2017,2018,2019,2020 Security Onion Solutions, LLC
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+. /usr/sbin/so-common
+
+local_salt_dir=/opt/so/saltstack/local
+
+SKIP=0
+
+function usage {
+
+cat << EOF
+
+Usage: $0 [-abefhoprsw] [ -i IP ]
+
+This program allows you to add a firewall rule to allow connections from a new IP address or CIDR range.
+
+If you run this program with no arguments, it will present a menu for you to choose your options.
+
+If you want to automate and skip the menu, you can pass the desired options as command line arguments.
+
+EXAMPLES
+
+To add 10.1.2.3 to the analyst role:
+so-allow -a -i 10.1.2.3
+
+To add 10.1.2.0/24 to the osquery role:
+so-allow -o -i 10.1.2.0/24
+
+EOF
+
+}
+
+while getopts "ahfesprbowi:" OPTION
+do
+    case $OPTION in
+        h)
+            usage
+            exit 0
+            ;;
+        a)
+            FULLROLE="analyst"
+            SKIP=1
+            ;;
+        b)
+            FULLROLE="beats_endpoint"
+            SKIP=1
+            ;;
+	e)
+            FULLROLE="elasticsearch_rest"
+            SKIP=1
+            ;;
+        f)
+	    FULLROLE="strelka_frontend"
+            SKIP=1
+            ;;
+        i)  IP=$OPTARG
+            ;;
+        o)
+            FULLROLE="osquery_endpoint"
+            SKIP=1
+            ;;
+        v)
+            FULLROLE="velociraptor"
+            SKIP=1
+            ;;
+        w)
+            FULLROLE="wazuh_agent"
+            SKIP=1
+            ;;
+        s)
+            FULLROLE="syslog"
+            SKIP=1
+            ;;
+        p)
+            FULLROLE="wazuh_api"
+            SKIP=1
+            ;;
+        r)
+            FULLROLE="wazuh_authd"
+            SKIP=1
+            ;;
+        *)
+            usage
+            exit 0
+            ;;
+    esac
+done
+
+if [ "$SKIP" -eq 0 ]; then
+
+    echo "This program allows you to add a firewall rule to allow connections from a new IP address."
+    echo ""
+    echo "Choose the role for the IP or Range you would like to add"
+    echo ""
+    echo "[a] - Analyst - ports 80/tcp and 443/tcp"
+    echo "[b] - Logstash Beat - port 5044/tcp"
+    echo "[e] - Elasticsearch REST API - port 9200/tcp"
+    echo "[f] - Strelka frontend - port 57314/tcp"
+    echo "[o] - Osquery endpoint - port 8090/tcp"
+    echo "[s] - Syslog device - 514/tcp/udp"
+    echo "[v] - Velociraptor - 8000,8001,8999/tcp"
+    echo "[w] - Wazuh agent - port 1514/tcp/udp"
+    echo "[p] - Wazuh API - port 55000/tcp"
+    echo "[r] - Wazuh registration service - 1515/tcp"
+    echo ""
+    echo "Please enter your selection:"
+    read -r ROLE
+    echo "Enter a single ip address or range to allow (example: 10.10.10.10 or 10.10.0.0/16):"
+    read -r IP
+
+    if [ "$ROLE" == "a" ]; then
+        FULLROLE=analyst
+    elif [ "$ROLE" == "b" ]; then
+        FULLROLE=beats_endpoint
+    elif [ "$ROLE" == "e" ]; then
+        FULLROLE=elasticsearch_rest
+    elif [ "$ROLE" == "f" ]; then
+        FULLROLE=strelka_frontend
+    elif [ "$ROLE" == "o" ]; then
+        FULLROLE=osquery_endpoint
+    elif [ "$ROLE" == "v" ]; then
+        FULLROLE=velociraptor
+    elif [ "$ROLE" == "w" ]; then
+        FULLROLE=wazuh_agent
+    elif [ "$ROLE" == "s" ]; then
+        FULLROLE=syslog
+    elif [ "$ROLE" == "p" ]; then
+        FULLROLE=wazuh_api
+    elif [ "$ROLE" == "r" ]; then
+        FULLROLE=wazuh_authd
+    else
+        echo "I don't recognize that role"
+        exit 1
+    fi
+
+fi
+
+echo "Adding $IP to the $FULLROLE role. This can take a few seconds"
+/usr/sbin/so-firewall includehost $FULLROLE $IP
+salt-call state.apply firewall queue=True
+
+# Check if Wazuh enabled
+if grep -q -R "wazuh: 1" $local_salt_dir/pillar/*; then
+    # If analyst, add to Wazuh AR whitelist
+    if [ "$FULLROLE" == "analyst" ]; then
+        WAZUH_MGR_CFG="/nsm/wazuh/etc/ossec.conf"
+        if ! grep -q "<white_list>$IP</white_list>" $WAZUH_MGR_CFG ; then
+            DATE=$(date)
+            sed -i 's/<\/ossec_config>//' $WAZUH_MGR_CFG
+            sed -i '/^$/N;/^\n$/D' $WAZUH_MGR_CFG
+            echo -e "<!--Address $IP added by /usr/sbin/so-allow on \"$DATE\"-->\n  <global>\n    <white_list>$IP</white_list>\n  </global>\n</ossec_config>" >> $WAZUH_MGR_CFG
+            echo "Added whitelist entry for $IP in $WAZUH_MGR_CFG."
+        echo
+            echo "Restarting OSSEC Server..."
+            /usr/sbin/so-wazuh-restart
+        fi
+    fi
+fi
