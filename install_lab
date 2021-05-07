@@ -68,9 +68,6 @@ so-logstash-restart --force
 # Restart SOC
 so-soc-restart --force
 
-# Restart nginx to load new config
-so-nginx-restart --force
-
 # Apply common state to pull in utility scripts
 salt "*" saltutil.kill_all_jobs && salt-call state.apply common
 
@@ -109,7 +106,25 @@ read -s password
 # Configure
 docker exec so-velociraptor /velociraptor/velociraptor --config server.config.yaml user add $username $password --role administrator
 
+### Configure n8n
+# Copy n8n config
+mkdir -p /opt/so/saltstack/local/salt/n8n
+cp -av salt/n8n/* /opt/so/saltstack/local/salt/n8n
+
+# Copy utility scripts
+cp -av salt/common/tools/sbin/so-n8n-* /opt/so/saltstack/default/salt/common/tools/sbin/
+
+# Restart nginx to load new config
+so-nginx-restart --force
+
+# Apply common state to pull in utility scripts
+salt-call saltutil.kill_all_jobs && salt-call state.apply common
+
+# Start n8n
+so-n8n-start --force
+
 # Copy top file
 cp salt/top.sls /opt/so/saltstack/local/salt/top.sls
 
 echo "Done!"
+echo "Access n8n by navigating to https://MANAGERIP/n8n"
