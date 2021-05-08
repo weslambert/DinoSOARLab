@@ -7,6 +7,9 @@ This repo was created to work in conjunction with the blog article here:
 
 https://wlambertts.medium.com/zero-dollar-detection-and-response-orchestration-with-n8n-security-onion-thehive-and-10b5e685e2a1
 
+## NOTE 
+This is NOT an officially supported Security Onion integration, so usage is at your own risk.
+
 ## Prerequisites
 It is assumed that Security Onion is already running and configured as a standalone, manager, or managersearch node.  
 
