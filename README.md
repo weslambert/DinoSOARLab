@@ -31,3 +31,13 @@ Once setup is complete:
 
 - Velociraptor GUI can be accessed via `https://$securityonion/velociraptor`
 - n8n can be access via `https://$securityonion/n8n`
+
+### Firewall 
+To add a firewall exception for a particular IP or range of IPs (for Velociraptor clients), you can use the so-firewall script, like so:
+
+`sudo so-firewall includehost velociraptor <IP/CIDR>` 
+
+### Velociraptor Clients
+Original Velociraptor client binaries and repacked client binaries can be found in `/opt/so/conf/velociraptor/clients`.
+
+The client configuration file can be found in `/opt/so/conf/velociraptor`.
