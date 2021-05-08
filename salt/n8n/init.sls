@@ -28,7 +28,7 @@ so-n8n:
       - N8N_PATH=/n8n/
       - DATA_FOLDER=/root/n8n/
       - WEBHOOK_TUNNEL_URL=https://{{ MANAGER_IP}}/n8n/
-      - VUE_APP_URL_BASE_API="https://{{ MANAGER_IP }}/n8n/"
+      - VUE_APP_URL_BASE_API=https://{{ MANAGER_IP }}/n8n/
     - binds:
       - /opt/so/conf/.n8n:/home/node/.n8n
     - port_bindings:
