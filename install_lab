@@ -128,3 +128,4 @@ cp salt/top.sls /opt/so/saltstack/local/salt/top.sls
 
 echo "Done!"
 echo "Access n8n by navigating to https://MANAGERIP/n8n"
+echo "Access Velociraptor by navigating to https://MANAGERIP/velociraptor"
