@@ -9,11 +9,20 @@ n8ndir:
     - group: 939
     - makedirs: True
 
+n8nexampledb:
+  file.managed:
+    - name: /opt/so/conf/n8n/database.sqlite
+    - source: salt://n8n/files/database.sqlite
+    - user: 939
+    - group: 939
+
 n8nlogdir:
   file.directory:
     - name: /opt/so/log/n8n
     - user: 939
     - group: 939
+
+
 
 so-n8n:
   docker_container.running:
@@ -30,7 +39,7 @@ so-n8n:
       - WEBHOOK_TUNNEL_URL=https://{{ MANAGER_IP}}/n8n/
       - VUE_APP_URL_BASE_API=https://{{ MANAGER_IP }}/n8n/
     - binds:
-      - /opt/so/conf/.n8n:/home/node/.n8n
+      - /opt/so/conf/n8n:/home/node/.n8n
     - port_bindings:
       - 0.0.0.0:5678:5678
     - extra_hosts:
