@@ -22,8 +22,6 @@ n8nlogdir:
     - user: 939
     - group: 939
 
-
-
 so-n8n:
   docker_container.running:
     - image: wlambert/n8n
