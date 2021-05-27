@@ -7,7 +7,7 @@ if [ "$(id -u)" -ne 0 ]; then
 fi
 
 VELO_PATH="/opt/so/conf/velociraptor"
-N8N_PATH="/opt/so/conf/.n8n"
+N8N_PATH="/opt/so/conf/n8n"
 
 FB_INPUT="yes"
 
