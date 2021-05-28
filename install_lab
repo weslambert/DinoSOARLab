@@ -7,7 +7,7 @@ if [ "$(id -u)" -ne 0 ]; then
 fi
 
 # Check if args supplied (for automated testing purposes)
-if [ "$#" -ne 3 ]
+if [ "$#" -ne 3 ];
 then
   PROMPT=1 
 else
@@ -113,7 +113,8 @@ so-velociraptor-restart --force
 echo "Waiting for Velociraptor to initialize..."
 sleep 15s
 
-if [ "$PROMPT" -eq 1 ]
+if [ "$PROMPT" -eq 1 ];
+then
   echo "Please provide an administrative username, then press[ENTER]:"
   read username
   echo "Please provide a password for the administrative user, then press [ENTER]:"
@@ -148,7 +149,8 @@ so-thehive-restart --force
 cp salt/top.sls /opt/so/saltstack/local/salt/top.sls
 
 ## Velocirator API config
-if [ "$PROMPT" -eq 1 ]
+if [ "$PROMPT" -eq 1 ];
+then
   echo "Please provide a username for the Velociraptor API connection, then press[ENTER]:"
   read apiuser
 fi
