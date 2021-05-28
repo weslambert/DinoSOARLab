@@ -143,6 +143,10 @@ cd $VELO_PATH
 # Create API config
 ./velociraptor --config server.config.yaml config api_client --name $apiuser $N8N_PATH/api_client.yaml || true
 
+# Replace 0.0.0.0 with our MGR ip
+VELOSERVERIP=$(salt-call pillar.get global:managerip --out json | jq -r '.[]')
+sed -i "s|0.0.0.0|$VELOSERVERIP|" $N8N_PATH/api_client.yaml
+
 # Set perms for API config
 chmod 644 $N8N_PATH/api_client.yaml
 
