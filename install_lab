@@ -11,9 +11,10 @@ if [ "$#" -ne 3 ];
 then
   PROMPT=1 
 else
- username=$1
- password=$2
- apiuser=$3
+  PROMPT=0
+  username=$1
+  password=$2
+  apiuser=$3
 fi
 
 VELO_PATH="/opt/so/conf/velociraptor"
