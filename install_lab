@@ -6,6 +6,16 @@ if [ "$(id -u)" -ne 0 ]; then
     exit 1
 fi
 
+# Check if args supplied (for automated testing purposes)
+if [ "$#" -ne 3 ]
+then
+  PROMPT=1 
+else
+ username=$1
+ password=$2
+ apiuser=$3
+fi
+
 VELO_PATH="/opt/so/conf/velociraptor"
 N8N_PATH="/opt/so/conf/n8n"
 
@@ -102,10 +112,13 @@ so-velociraptor-restart --force
 # Configure user/pass/role
 echo "Waiting for Velociraptor to initialize..."
 sleep 15s
-echo "Please provide an administrative username, then press[ENTER]:"
-read username
-echo "Please provide a password for the administrative user, then press [ENTER]:"
-read -s password
+
+if [ "$PROMPT" -eq 1 ]
+  echo "Please provide an administrative username, then press[ENTER]:"
+  read username
+  echo "Please provide a password for the administrative user, then press [ENTER]:"
+  read -s password
+fi
 
 # Configure
 docker exec so-velociraptor /velociraptor/velociraptor --config server.config.yaml user add $username $password --role administrator
@@ -135,8 +148,10 @@ so-thehive-restart --force
 cp salt/top.sls /opt/so/saltstack/local/salt/top.sls
 
 ## Velocirator API config
-echo "Please provide a username for the Velociraptor API connection, then press[ENTER]:"
-read apiuser
+if [ "$PROMPT" -eq 1 ]
+  echo "Please provide a username for the Velociraptor API connection, then press[ENTER]:"
+  read apiuser
+fi
 
 cd $VELO_PATH
 
