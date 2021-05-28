@@ -143,6 +143,9 @@ cd $VELO_PATH
 # Create API config
 ./velociraptor --config server.config.yaml config api_client --name $apiuser $N8N_PATH/api_client.yaml || true
 
+# Set perms for API config
+chmod 644 $N8N_PATH/api_client.yaml
+
 # Add API user to admin role
 ./velociraptor --config server.config.yaml acl grant $apiuser --role administrator
 
