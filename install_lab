@@ -122,7 +122,8 @@ then
   read -s password
 fi
 
-# Configure
+# Configure administrative user/pass for Velociraptor
+echo "Configuring administrative username and password for Velociraptor..."
 docker exec so-velociraptor /velociraptor/velociraptor --config server.config.yaml user add $username $password --role administrator
 
 ### Configure n8n
@@ -161,6 +162,7 @@ cd $VELO_PATH
 # Create API config
 echo "Creating Velociraptor API config..."
 ./velociraptor --config server.config.yaml config api_client --name $apiuser $N8N_PATH/api_client.yaml || true
+echo
 
 # Replace 0.0.0.0 with our MGR ip
 echo "Ensuring correct manager IP is set..."
