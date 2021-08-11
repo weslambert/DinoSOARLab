@@ -161,7 +161,7 @@ cd $VELO_PATH
 
 # Create API config
 echo "Creating Velociraptor API config..."
-./velociraptor --config server.config.yaml config api_client --name $apiuser $N8N_PATH/api_client.yaml || true
+./velociraptor --config server.config.yaml config api_client --name $apiuser --role administrator api_client.yaml || true
 echo
 
 # Replace 0.0.0.0 with our MGR ip
@@ -172,10 +172,6 @@ sed -i "s|0.0.0.0|$VELOSERVERIP|" $N8N_PATH/api_client.yaml
 # Set perms for API config
 echo "Ensuring correct permissions are set for Velociraptor API config..."
 chmod 644 $N8N_PATH/api_client.yaml
-
-# Add API user to admin role
-echo "Add role for $apiuser..."
-./velociraptor --config server.config.yaml acl grant $apiuser --role administrator
 
 echo
 echo "Done!"
