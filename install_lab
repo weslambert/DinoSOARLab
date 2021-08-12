@@ -36,7 +36,11 @@ cp -av salt/filebeat/* /opt/so/saltstack/local/salt/filebeat
 cp salt/nginx/etc/nginx.conf /opt/so/saltstack/local/salt/nginx/etc/nginx.conf
 
 # Copy SOC config
-cp salt/soc/files/soc/hunt.actions.json /opt/so/saltstack/local/salt/soc/files/soc/hunt.actions.json
+cp /opt/so/saltstack/default/salt/soc/files/soc/menu.actions.json /opt/so/saltstack/local/salt/soc/files/soc/
+sed -i '$ d' /opt/so/saltstack/local/salt/soc/files/soc/menu.actions.json
+echo ",{ \"name\": \"Velociraptor\", \"description\": \"Velociraptor Client Pivot\", \"icon\": \"fa-external-link-alt\", \"target\": \"_blank\",\"links\": [\"/velociraptor/app/index.html?#/search/{:client.id}\"]}]" >> /opt/so/saltstack/local/salt/soc/files/soc/menu.actions.json
+cp /opt/so/saltstack/default/salt/soc/files/soc/tools.json /opt/so/saltstack/local/salt/soc/files/soc
+sed -i 's|]|,{ "name": "Velociraptor", "description": "toolVelociraptorHelp", "icon": "fa-external-link-alt", "target": "so-velociraptor", "link": "/velociraptor/" },{ "name": "n8n", "description": "tooln8nHelp", "icon": "fa-external-link-alt", "target": "so-n8n", "link": "/n8n/" }]|' /opt/so/saltstack/local/salt/soc/files/soc/tools.json
 
 # Copy utility scripts
 cp -av salt/common/tools/sbin/so-velociraptor-* /opt/so/saltstack/default/salt/common/tools/sbin/
