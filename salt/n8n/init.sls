@@ -9,13 +9,6 @@ n8ndir:
     - group: 1000
     - makedirs: True
 
-n8nexampledb:
-  file.managed:
-    - name: /opt/so/conf/n8n/database.sqlite
-    - source: salt://n8n/files/database.sqlite
-    - user: 1000
-    - group: 1000
-
 so-n8n:
   docker_container.running:
     - image: wlambert/n8n
