@@ -9,6 +9,10 @@ output {
     elasticsearch {
       pipeline => "velociraptor"
       hosts => "{{ ES }}"
+{% if salt['pillar.get']('elasticsearch:auth:enabled') is sameas true %}
+      user => "{{ ES_USER }}"
+      password => "{{ ES_PASS }}"
+{% endif %}
       index => "so-velociraptor"
       ssl => true
       ssl_certificate_verification => false
