@@ -1,7 +1,8 @@
 {
  "artifacts": [
   "Server.Monitor.Health",
-  "Custom.Flows.Write"
+  "Custom.Flows.Write",
+  "Custom.Server.Automation.Quarantine"
  ],
  "specs": [
   {
