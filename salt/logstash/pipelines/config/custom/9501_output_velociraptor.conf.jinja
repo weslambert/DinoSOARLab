@@ -3,7 +3,8 @@
 {%- else %}
 {%- set ES = salt['pillar.get']('elasticsearch:mainip', '') -%}
 {%- endif %}
-{% set FEATURES = salt['pillar.get']('elastic:features', False) %}
+{%- set ES_USER = salt['pillar.get']('elasticsearch:auth:users:so_elastic_user:user', '') %}
+{%- set ES_PASS = salt['pillar.get']('elasticsearch:auth:users:so_elastic_user:pass', '') %}
 output {
   if "velociraptor" in [module] or "velociraptor" in [event.module] {
     elasticsearch {
