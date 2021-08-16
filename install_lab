@@ -125,7 +125,14 @@ then
   echo "Please provide an administrative username, then press[ENTER]:"
   read username
   echo "Please provide a password for the administrative user, then press [ENTER]:"
-  read -s password
+  while true; do
+    read -s -p "Password: " password
+    echo
+    read -s -p "Password (again): " password2
+    echo
+    [ "$password" = "$password2" ] && break
+    echo "Please ensure passwords match!"
+  done
 fi
 
 # Configure administrative user/pass for Velociraptor
