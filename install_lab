@@ -165,7 +165,7 @@ cd $VELO_PATH
 
 # Create API config
 echo "Creating Velociraptor API config..."
-./velociraptor --config server.config.yaml config api_client --name $apiuser --role administrator api_client.yaml || true
+./velociraptor --config server.config.yaml config api_client --name $apiuser --role administrator $N8N_PATH/api_client.yaml || true
 echo
 
 # Replace 0.0.0.0 with our MGR ip
