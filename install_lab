@@ -97,10 +97,12 @@ echo "Waiting..."
 sleep 45s 
 
 # Adjust Velociraptor config
-CUSTOM_ARTIFACT_DIR="/opt/so/conf/velociraptor/artifact_definitions/Custom/Flows"
-mkdir -p $CUSTOM_ARTIFACT_DIR
-cp velociraptor/artifacts/Custom.Flows.Write $CUSTOM_ARTIFACT_DIR/Write.yaml
-chmod 700 $CUSTOM_ARTIFACT_DIR/Write.yaml
+CUSTOM_ARTIFACT_DIR="/opt/so/conf/velociraptor/artifact_definitions/Custom"
+mkdir -p $CUSTOM_ARTIFACT_DIR/Flows
+mkdir -p $CUSTOM_ARTIFACT_DIR/Server/Automation
+cp velociraptor/artifacts/Custom.Flows.Write $CUSTOM_ARTIFACT_DIR/Flows/Write.yaml
+cp velociraptor/artifacts/Custom.Server.Automation.Quarantine $CUSTOM_ARTIFACT_DIR/Server/Automation/Quarantine.yaml
+chmod 700 -R $CUSTOM_ARTIFACT_DIR
 cp velociraptor/server_monitoring.json.db /opt/so/conf/velociraptor/config/
 chmod 640 /opt/so/conf/velociraptor/config/server_monitoring.json.db
 
