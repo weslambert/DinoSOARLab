@@ -29,8 +29,30 @@ cp -av salt/velociraptor/* /opt/so/saltstack/local/salt/velociraptor
 # Copy firewall config
 cp -av salt/firewall/* /opt/so/saltstack/local/salt/firewall
 
-# Copy Filebeat config
-cp -av salt/filebeat/* /opt/so/saltstack/local/salt/filebeat
+# Filebeat config
+#cp -av salt/filebeat/* /opt/so/saltstack/local/salt/filebeat
+cp /opt/so/saltstack/default/salt/filebeat/init.sls /opt/so/saltstack/local/salt/filebeat/init.sls
+sed -i 's|- /etc/ssl.*|- /opt/so/conf/velociraptor/server_artifacts:/velociraptor/:ro|' /opt/so/saltstack/local/salt/filebeat/init.sls
+
+cat <<EOF >> /opt/so/saltstack/local/pillar/minions/$(salt-call grains.get id --out=json | jq -r .local).sls
+filebeat:
+  config:
+    inputs:
+      - type: log
+        paths:
+          - /velociraptor/Custom.Flows.Write/*.json
+        fields:
+          module: velociraptor
+          pipeline: velociraptor
+        processors:
+          - drop_fields:
+            fields: ["source", "prospector", "input", "offset", "beat"]
+
+        fields_under_root: true
+        clean_removed: false
+        close_removed: false 
+EOF
+
 
 # Copy nginx config
 cp salt/nginx/etc/nginx.conf /opt/so/saltstack/local/salt/nginx/etc/nginx.conf
