@@ -32,7 +32,7 @@ cp -av salt/firewall/* /opt/so/saltstack/local/salt/firewall
 # Filebeat config
 #cp -av salt/filebeat/* /opt/so/saltstack/local/salt/filebeat
 cp /opt/so/saltstack/default/salt/filebeat/init.sls /opt/so/saltstack/local/salt/filebeat/init.sls
-sed -i 's|- /etc/ssl.*|- /opt/so/conf/velociraptor/server_artifacts:/velociraptor/:ro|' /opt/so/saltstack/local/salt/filebeat/init.sls
+sed -i '/- \/etc\/ssl.*/a \ \ \ \ \ \ - \/opt\/so\/conf\/velociraptor\/server_artifacts:\/velociraptor\/:ro' /opt/so/saltstack/local/salt/filebeat/init.sls
 
 cat <<EOF >> /opt/so/saltstack/local/pillar/minions/$(salt-call grains.get id --out=json | jq -r .local).sls
 filebeat:
