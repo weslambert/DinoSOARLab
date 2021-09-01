@@ -37,6 +37,8 @@ To add a firewall exception for a particular IP or range of IPs (for Velocirapto
 
 `sudo so-firewall includehost velociraptor <IP/CIDR>` 
 
+`sudo salt-call state.apply firewall queue=True`
+
 ### Velociraptor Clients
 Original Velociraptor client binaries and repacked client binaries can be found in `/opt/so/conf/velociraptor/clients`.
 
