@@ -178,10 +178,6 @@ salt-call saltutil.kill_all_jobs && salt-call state.apply common
 # Start n8n
 so-n8n-start --force
 
-# Copy application.conf file into place for TheHive and restart
-cp salt/thehive/etc/application.conf /opt/so/saltstack/local/salt/thehive/etc/
-so-thehive-restart --force
-
 # Copy top file
 cp salt/top.sls /opt/so/saltstack/local/salt/top.sls
 
