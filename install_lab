@@ -204,6 +204,12 @@ sed -i "s|0.0.0.0|$VELOSERVERIP|" $N8N_PATH/api_client.yaml
 echo "Ensuring correct permissions are set for Velociraptor API config..."
 chmod 644 $N8N_PATH/api_client.yaml
 
+# Configure Elastalert
+cp elastalert/new_observables.yaml /opt/so/rules/elastalert/
+N8NIP=$(salt-call pillar.get global:managerip --out json | jq -r '.[]')
+sed -i "s|PLACEHOLDER|$N8NIP|" /opt/so/rules/elastalert/new_observables.yaml
+so-elastalert-restart
+
 echo
 echo "Done!"
 echo "Access n8n by navigating to https://MANAGERIP/n8n -- NOTE: A small bug about a session ID may appear after authenticating to SOC.  If so, refresh the page to resolve it."
