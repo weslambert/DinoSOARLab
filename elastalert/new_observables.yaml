@@ -13,3 +13,4 @@ http_post_url: "http://PLACEHOLDER:5678/webhook-test/132294dc-5eec-4815-a696-d20
 http_post_payload:
   artifact_type: so_artifact.artifactType
   artifact_value: so_artifact.value
+  case_id: _id
