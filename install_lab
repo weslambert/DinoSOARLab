@@ -181,6 +181,12 @@ so-n8n-start --force
 # Copy top file
 cp salt/top.sls /opt/so/saltstack/local/salt/top.sls
 
+# Configure Elastalert
+cp elastalert/new_observables.yaml /opt/so/rules/elastalert/
+N8NIP=$(salt-call pillar.get global:managerip --out json | jq -r '.[]')
+sed -i "s|PLACEHOLDER|$N8NIP|" /opt/so/rules/elastalert/new_observables.yaml
+so-elastalert-restart
+
 ## Velocirator API config
 if [ "$PROMPT" -eq 1 ];
 then
@@ -203,12 +209,6 @@ sed -i "s|0.0.0.0|$VELOSERVERIP|" $N8N_PATH/api_client.yaml
 # Set perms for API config
 echo "Ensuring correct permissions are set for Velociraptor API config..."
 chmod 644 $N8N_PATH/api_client.yaml
-
-# Configure Elastalert
-cp elastalert/new_observables.yaml /opt/so/rules/elastalert/
-N8NIP=$(salt-call pillar.get global:managerip --out json | jq -r '.[]')
-sed -i "s|PLACEHOLDER|$N8NIP|" /opt/so/rules/elastalert/new_observables.yaml
-so-elastalert-restart
 
 echo
 echo "Done!"
