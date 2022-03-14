@@ -76,8 +76,7 @@ else
 fi
 
 # Copy pillar stuff for Logstash config
-    cp -av pillar/logstash/* /opt/so/saltstack/local/pillar/logstash/
-done
+cp -av pillar/logstash/* /opt/so/saltstack/local/pillar/logstash/
 
 # Edit minion pillar to include Velociraptor firewwall config
 cat << EOF >> /opt/so/saltstack/local/pillar/minions/*.sls
