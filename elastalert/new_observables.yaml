@@ -1,0 +1,16 @@
+filter:
+- query:
+    query_string:
+      query: so_kind:"artifact"
+index: '*:so-case'
+name: New Observable Added to Case
+realert:
+  minutes: 0
+type: any
+alert: post
+http_post_ignore_ssl_errors: True
+http_post_url: "http://PLACEHOLDER:5678/webhook-test/fcc0eebc-2dc7-47fc-a73d-d34bb12ea29a"
+http_post_payload:
+  artifact_type: so_artifact.artifactType
+  artifact_value: so_artifact.value
+  case_id: _id

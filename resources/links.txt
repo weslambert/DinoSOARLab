@@ -4,5 +4,5 @@ https://gist.githubusercontent.com/weslambert/1c8a92bda81c8c7bf9ae054d26a561e0/r
 Obfuscate Bat YARA rule:
 https://gist.githubusercontent.com/weslambert/8538c0c7dae6a1a597bb9e15a2cc1ef6/raw/38f5559f952ceb0f4b76e6f3a0edf6d0ee348b84/mal_cmd_obfuscated_bat
 
-TheHive-n8n-Velociraptor Workflow:
-https://gist.githubusercontent.com/weslambert/a8b43960fe3e5a3dd25468802743b074/raw/e552320367e25375a8d0f809e1c8ecca42de38da/n8n_thehive_velociraptor_workflow
+n8n Workflow:
+https://gist.githubusercontent.com/weslambert/138509d9278026d5fd58ad0301defed4/raw/35b86f70a9a99c894f5f23f34e701cc4b03c3405/soarlab_workflow

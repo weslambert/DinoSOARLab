@@ -5,46 +5,27 @@ description: |
    - Look for artifacts with successful completion and results with regard to `ArtifactRegex`
    - Look for the above, in addition to Hunts with a description equating/similar to `HuntRegex`
    - Quarantine relevant Windows hosts
-   - Update a TheHive case with a tag noting that the client was quarantined
 author: Wes Lambert, @therealwlambert
 type: SERVER_EVENT
 parameters:
   - name: ArtifactRegex
     default: "Filename|Hashes"
   - name: HuntRegex
-    default: "TheHive"
+    default: "Security Onion"
   - name: DisableSSLVerify
     type: bool
     default: true
 sources:
   - query: |
-      LET TheHiveKey <= server_metadata().TheHiveKey
-      LET TheHiveURL <= server_metadata().TheHiveURL
-      LET ClientTag = FQDN + ' - Quarantined by Velociraptor'
-      LET CombinedTags = array(a1=Tags,a2=ClientTag)
-      LET GetTags = 
-        SELECT parse_json(data=Content).tags AS Tags FROM http_client(
-          headers=dict(`Content-Type`="application/json", `Authorization`=format(format="Bearer %v", args=[TheHiveKey])),
-          disable_ssl_security=DisableSSLVerify,
-          method="GET", 
-          url=format(format="%v/api/case/%v", args=[TheHiveURL,TheHiveCaseID]))
-      LET FinalTags = SELECT Tags, if(condition=Tags=NULL, then=ClientTag, else=CombinedTags) AS SendTags FROM GetTags
-      LET PostTags = 
-        SELECT * FROM http_client(
-          data=serialize(item=dict(tags=FinalTags.SendTags[0]), format="json"),
-          headers=dict(`Content-Type`="application/json", `Authorization`=format(format="Bearer %v", args=[TheHiveKey])),
-          disable_ssl_security=DisableSSLVerify,
-          method="PATCH", 
-          url=format(format="%v/api/case/%v", args=[TheHiveURL,TheHiveCaseID]))
       LET FlowInfo = SELECT Flow.client_id AS ClientID, client_info(client_id=ClientId).os_info.fqdn AS FQDN, Flow.request.creator AS FlowCreator, Flow FROM watch_monitoring(artifact="System.Flow.Completion") WHERE Flow.artifacts_with_results =~ ArtifactRegex
       LET StartQuarantine = 
         SELECT ClientID, 
             {SELECT hunt_description from hunts(hunt_id=FlowCreator)} AS HuntDescription, 
-            {SELECT split(string=hunt_description, sep="::")[1] from hunts(hunt_id=FlowCreator)} AS TheHiveCaseID, 
+            {SELECT split(string=hunt_description, sep="::")[1] from hunts(hunt_id=FlowCreator)} AS SOCaseID, 
             {SELECT collect_client(client_id=ClientID, artifacts=["Windows.Remediation.Quarantine"], spec=dict(`Windows.Remediation.Quarantine`=dict())) FROM scope() } AS Quarantine,
             FQDN
             FROM FlowInfo WHERE HuntDescription =~ HuntRegex
       SELECT * FROM foreach (
             row=StartQuarantine,
-            query={ SELECT ClientID, Quarantine, {SELECT * FROM PostTags} AS TheHiveUpdate FROM scope() } 
+            query={ SELECT ClientID, Quarantine FROM scope() } 
       )

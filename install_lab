@@ -74,16 +74,9 @@ if [[ "$FB_INPUT" == "yes" ]]; then
 else
     cp salt/elasticsearch/files/ingest/velociraptor.es_input /opt/so/saltstack/local/salt/elasticsearch/files/ingest/velociraptor
 fi
-cp salt/elasticsearch/templates/custom/so-velociraptor-template.json /opt/so/saltstack/local/salt/elasticsearch/templates/custom/so-velociraptor-template.json
 
-# Modify templates so Velociraptor will inherit mappings
-cp /opt/so/saltstack/default/salt/elasticsearch/templates/so/so-common-template.json.jinja /opt/so/saltstack/local/salt/elasticsearch/templates/so/so-common-template.json.jinja
-sed -i 's|\"so-playbook-\*\"|\"so-playbook-*\",\ \"so-velociraptor-\*\"|' /opt/so/saltstack/local/salt/elasticsearch/templates/so/so-common-template.json.jinja
-
-# Copy pillar stuff for ES and Logstash config
-for i in elasticsearch logstash; do
-    cp -av pillar/$i/* /opt/so/saltstack/local/pillar/$i
-done
+# Copy pillar stuff for Logstash config
+cp -av pillar/logstash/* /opt/so/saltstack/local/pillar/logstash/
 
 # Edit minion pillar to include Velociraptor firewwall config
 cat << EOF >> /opt/so/saltstack/local/pillar/minions/*.sls
@@ -178,12 +171,14 @@ salt-call saltutil.kill_all_jobs && salt-call state.apply common
 # Start n8n
 so-n8n-start --force
 
-# Copy application.conf file into place for TheHive and restart
-cp salt/thehive/etc/application.conf /opt/so/saltstack/local/salt/thehive/etc/
-so-thehive-restart --force
-
 # Copy top file
 cp salt/top.sls /opt/so/saltstack/local/salt/top.sls
+
+# Configure Elastalert
+cp elastalert/new_observables.yaml /opt/so/rules/elastalert/
+N8NIP=$(salt-call pillar.get global:managerip --out json | jq -r '.[]')
+sed -i "s|PLACEHOLDER|$N8NIP|" /opt/so/rules/elastalert/new_observables.yaml
+so-elastalert-restart
 
 ## Velocirator API config
 if [ "$PROMPT" -eq 1 ];
