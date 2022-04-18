@@ -3,7 +3,7 @@ Security Onion + Automation + Response Lab including n8n and Velociraptor
 
 ![SOARLab](https://user-images.githubusercontent.com/16829864/163741754-3d2823fd-6631-42ec-97dd-404397254ad2.png)
 
-This repo was created to work in conjunction with the blog article here (NOTE: The below article has since been deprecated, as TheHive has been removed from Security Onion -- a new article is currently being developed to address these changes): 
+This repo was created to work in conjunction with the blog article here (NOTE: The below article has since been deprecated, as TheHive has been removed from Security Onion (as of version `2.3.100`) -- a new article is currently in development to address these changes): 
 
 https://wlambertts.medium.com/zero-dollar-detection-and-response-orchestration-with-n8n-security-onion-thehive-and-10b5e685e2a1
 
