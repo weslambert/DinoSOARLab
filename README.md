@@ -11,7 +11,7 @@ The primary difference with the updated implementation is that instead of adding
 
 Feature parity updates (in progress):
 
-[ ] Mark case with label/tag once a host is quarantined 
+- [ ] Mark case with label/tag once a host is quarantined 
 
 ## NOTE 
 This is NOT an officially supported Security Onion integration, so usage is at your own risk.
