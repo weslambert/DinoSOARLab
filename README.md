@@ -3,9 +3,11 @@ Security Onion + Automation + Response Lab including n8n and Velociraptor
 
 ![SOARLab](https://user-images.githubusercontent.com/16829864/163741754-3d2823fd-6631-42ec-97dd-404397254ad2.png)
 
-This repo was created to work in conjunction with the blog article here (NOTE: The below article has since been deprecated, as TheHive has been removed from Security Onion (as of version `2.3.100`) -- a new article is currently in development to address these changes): 
+This repo was created to work in conjunction with the blog article here: 
 
 https://wlambertts.medium.com/zero-dollar-detection-and-response-orchestration-with-n8n-security-onion-thehive-and-10b5e685e2a1
+
+### **NOTE**: The above article has since been deprecated, as TheHive has been removed from Security Onion (as of version `2.3.100`) -- a new article is currently in development to address these changes.
 
 The primary difference with the updated implementation is that instead of adding an observable to TheHive, it should be added to a case within Security Onion [Cases](https://docs.securityonion.net/en/2.3/cases.html). From there, an Elastalert rule will watch for new observable additions, then perform an HTTP POST to the webhook used for automating Hunts for Velociraptor.
 
