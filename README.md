@@ -11,7 +11,7 @@ https://wlambertts.medium.com/zero-dollar-detection-and-response-orchestration-w
 
 The primary difference with the updated implementation is that instead of adding an observable to TheHive, it should be added to a case within Security Onion [Cases](https://docs.securityonion.net/en/2.3/cases.html). From there, an Elastalert rule will watch for new observable additions, then perform an HTTP POST to the webhook used for automating Hunts for Velociraptor.
 
-Feature parity updates (in progress):
+## Feature parity updates (in progress):
 
 - [ ] Mark case with label/tag once a host is quarantined 
 
