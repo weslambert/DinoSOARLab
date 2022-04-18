@@ -7,6 +7,8 @@ This repo was created to work in conjunction with the blog article here (NOTE: T
 
 https://wlambertts.medium.com/zero-dollar-detection-and-response-orchestration-with-n8n-security-onion-thehive-and-10b5e685e2a1
 
+The primary difference with the updated implementation is that instead of adding an observable to TheHive, it should be added to a case within Security Onion [Cases](https://docs.securityonion.net/en/2.3/cases.html). From there, an Elastalert rule will watch for new observable additions, then perform an HTTP POST to the webhook used for automating Hunts for Velociraptor.
+
 ## NOTE 
 This is NOT an officially supported Security Onion integration, so usage is at your own risk.
 
