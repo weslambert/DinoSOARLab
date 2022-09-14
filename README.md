@@ -3,7 +3,7 @@ Security Onion + Automation + Response Lab including n8n and Velociraptor
 
 ![DinoSOARLab](https://user-images.githubusercontent.com/16829864/163741754-3d2823fd-6631-42ec-97dd-404397254ad2.png)
 
-This repo was created to work in conjunction with the blog article here: 
+This repo was originally created to work in conjunction with the blog article here: 
 
 https://wlambertts.medium.com/zero-dollar-detection-and-response-orchestration-with-n8n-security-onion-thehive-and-10b5e685e2a1
 
