@@ -5,4 +5,4 @@ Obfuscate Bat YARA rule:
 https://gist.githubusercontent.com/weslambert/8538c0c7dae6a1a597bb9e15a2cc1ef6/raw/38f5559f952ceb0f4b76e6f3a0edf6d0ee348b84/mal_cmd_obfuscated_bat
 
 n8n Workflow:
-https://gist.githubusercontent.com/weslambert/138509d9278026d5fd58ad0301defed4/raw/35b86f70a9a99c894f5f23f34e701cc4b03c3405/soarlab_workflow
+https://gist.githubusercontent.com/weslambert/520029a8c5342aa1c89920293fdfa84e/raw/c9ca2689038d7730cc720c26a32f39ee4bf9d834/dinosoarlab_workflow
